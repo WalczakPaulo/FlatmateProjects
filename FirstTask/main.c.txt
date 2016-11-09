@@ -1,0 +1,136 @@
+
+// Created by Paul on 2016-10-29.
+// Warning: it was not meant to be written object-oriented way!
+//
+#include <iostream>
+#include <math.h>
+#define MAX_ITERATION 1000
+#define EPS 0.001
+#define EXCEEDED_ITERATIONS -2
+#define ERROR_EXIT_CODE -1
+#define SUCCESS_EXIT_CODE 0
+#define MAX_UPSIDE 1.79769e+200
+using namespace std;
+
+double absVal (double value);
+
+double power (double base, int exp);
+
+double initializationInfo();
+
+void errorInfo();
+
+void successInfo(double answer);
+
+double doCalculations(double xVal);
+
+/*------------------MAIN------------*/
+int main()
+{
+    /* Variables */
+    double x = 0.0;
+    double answer = 0;
+
+    /* Some initialization and counting */
+    x = initializationInfo();
+
+    /*doCalcs*/
+    answer = doCalculations(x);
+
+    if( answer == EXCEEDED_ITERATIONS)
+        {
+            errorInfo();
+            return ERROR_EXIT_CODE;
+        }
+    else
+        {
+            successInfo(answer);
+            return SUCCESS_EXIT_CODE;
+        }
+
+}
+/*----------------MAIN----------------*/
+
+double absVal(double value)
+{
+    if (value < 0 )
+        return value*(-1);
+    else return value;
+}
+
+double power(double base, int exp)
+{
+    double tempMultiplier = base;
+    while(exp>1)
+    {
+        base *= tempMultiplier;
+        exp--;
+    }
+    return base;
+}
+
+double initializationInfo()
+{
+    double xValue = 0.0;
+    cout << "/*--------------------------------------------*/" << endl;
+    cout << "Martin's project " << endl;
+    cout << "Program is used to evaluate arcsinh(x). Enter your choice of x : " << endl;
+    cin >> xValue;
+    cout << "/*--------------------------------------------*/ \n" << endl;
+    return xValue;
+}
+
+void errorInfo()
+{
+    cout << endl;
+    cout << "/*-----------------RESULTS----------------*/" << endl << endl;
+    cout << " Can't be solved. Number of Iterations was exceeded " << endl;
+}
+
+void successInfo(double answer)
+{
+    cout << endl;
+    cout << "/*-----------------RESULTS----------------*/" << endl << endl;
+    cout << "The value was found with precision of " << EPS << " and equals: arcsinh =  " << answer << endl;
+}
+
+double doCalculations(double xValue)
+{
+    double arcsinhActualValue = asinh(xValue);
+    double arcsinhOurValue = xValue;
+    int itersNumber = 3;
+    bool isMinus = true;
+
+    while( absVal(arcsinhActualValue - arcsinhOurValue) > EPS)
+    {
+        int counter = 1;
+        double upSide = 1;
+        double downSide = 1;
+        double coefficient = 1;
+        double xPower = 1;
+        for (counter = 1; counter <= itersNumber; counter++) {
+            if (counter % 2 == 1 && counter != itersNumber)
+                upSide *= counter;
+            else
+                downSide *= counter;
+        }
+        coefficient = upSide / double(downSide);
+        xPower = power(xValue, itersNumber);
+
+        if (isMinus == true) {
+            arcsinhOurValue -= coefficient * xPower;
+            isMinus = false;
+        } else {
+            arcsinhOurValue += coefficient * xPower;
+            isMinus = true;
+        }
+
+        if(itersNumber > MAX_ITERATION || upSide > MAX_UPSIDE)
+            return EXCEEDED_ITERATIONS;
+
+        itersNumber += 2;
+    }
+
+    return arcsinhOurValue;
+
+}
