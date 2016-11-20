@@ -31,12 +31,12 @@ wget -e robots=off \
  --accept jpg,jpeg,png,gif \
  --convert-links -N \
  --limit-rate=200k \
- --wait 1.0 \
+ --wait 0.1 \
  -P $target_folder $stripped_url
 echo ""
 echo ""
 echo "> Finished scraping $stripped_url"
 done
 
-clear the sites.txt file
+#clear the sites.txt file
 > sites.txt 
